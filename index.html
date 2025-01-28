@@ -69,7 +69,7 @@
       // Safari home screen'den oyun açıldığında sadece landscape modunu desteklemek için
       window.addEventListener("orientationchange", function() {
         if (window.orientation === 0 || window.orientation === 180) {
-          alert("Please switch to landscape mode to play the game.");
+          alert("Lütfen cihazınızı yan çeviriniz.");
           // Landscape mode'a zorlamak
           screen.orientation.lock("landscape").catch(function(e) {
             console.log(e);
