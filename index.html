@@ -3,14 +3,54 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <title>Unity Web Player | ProjectFindPairs</title>
+    <meta name="apple-mobile-web-app-capable" content="yes"> <!-- Safari Home Screen için gerekli -->
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"> <!-- URL ve toolbar gizleme -->
+    <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, user-scalable=no, minimal-ui"> <!-- Mobile Viewport için -->
+    <title>Koala</title>
+    <style>
+      /* Sayfa scroll ve pinch zoom engellemeleri */
+      body {
+        margin: 0;
+        overflow: hidden;
+        touch-action: none;
+        -ms-touch-action: none;
+      }
+
+      html, body {
+        height: 100%;
+      }
+
+      /* Full screen canvas için */
+      canvas {
+        display: block;
+        width: 100%;
+        height: 100%;
+      }
+
+      /* Portre moduna geçişi engellemek için */
+      @media screen and (orientation: portrait) {
+        body {
+          overflow: hidden; /* Portre modunda scroll'ı engeller */
+        }
+      }
+    </style>
   </head>
-  <body style="text-align: center; padding: 0; border: 0; margin: 0;">
-    <canvas id="unity-canvas" width=1920 height=1080 tabindex="-1" style="width: 1920px; height: 1080px; background: #231F20"></canvas>
+  <body>
+    <canvas id="unity-canvas" tabindex="-1"></canvas>
     <script src="Build/done4.loader.js"></script>
     <script>
+      // Canvas boyutunu cihazın ekran boyutuna göre ayarla
+      function resizeCanvas() {
+        var canvas = document.querySelector("#unity-canvas");
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+      }
+
+      // Sayfa yüklendiğinde ve pencere boyutu değiştiğinde canvas boyutlarını yeniden ayarla
+      window.addEventListener('load', resizeCanvas);
+      window.addEventListener('resize', resizeCanvas);
+
       if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
-        // Mobile device style: fill the whole browser client area with the game canvas:
         var meta = document.createElement('meta');
         meta.name = 'viewport';
         meta.content = 'width=device-width, height=device-height, initial-scale=1.0, user-scalable=no, shrink-to-fit=yes';
@@ -24,6 +64,18 @@
         document.body.style.textAlign = "left";
       }
 
+      // Safari home screen'den oyun açıldığında sadece landscape modunu desteklemek için
+      window.addEventListener("orientationchange", function() {
+        if (window.orientation === 0 || window.orientation === 180) {
+          alert("Please switch to landscape mode to play the game.");
+          // Landscape mode'a zorlamak
+          screen.orientation.lock("landscape").catch(function(e) {
+            console.log(e);
+          });
+        }
+      });
+
+      // Unity instance creation
       createUnityInstance(document.querySelector("#unity-canvas"), {
         arguments: [],
         dataUrl: "Build/done4.data.unityweb",
@@ -33,8 +85,6 @@
         companyName: "KeremCeylan",
         productName: "ProjectFindPairs",
         productVersion: "1.0",
-        // matchWebGLToCanvasSize: false, // Uncomment this to separately control WebGL canvas render size and DOM element size.
-        // devicePixelRatio: 1, // Uncomment this to override low DPI rendering on high DPI displays.
       });
     </script>
   </body>
